@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Castle Ball — Interactive rules configurator for the new hybrid sport. Toggle rules, adjust scoring, visualise the field.">
+<meta name="description" content="Castle Ball — Interactive rules configurator for the new hybrid sport.">
 <meta property="og:title" content="Castle Ball — Rules Configurator">
-<meta property="og:description" content="Design your own variant of Castle Ball. Toggle rules, pick your ball type, adjust scoring — live field diagram updates instantly.">
-<meta property="og:type" content="website">
+<meta property="og:description" content="Design your own variant of Castle Ball. Toggle rules, pick your ball type, adjust scoring.">
 <title>Castle Ball — Rules Configurator</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -298,17 +296,52 @@ input[type=range]::-webkit-slider-thumb {
 .mixed-text { font-size:11px; line-height:1.6; color:var(--cream); }
 .mixed-text strong { color:var(--blue); }
 
+/* ── SECTION TOGGLE BUTTON ── */
+.section-toggle {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gold);
+  font-size: 28px;        /* 3x larger for easy tapping */
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: transform 0.25s ease, background 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;        /* minimum tap target */
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.section-toggle:active { background: rgba(201,168,76,0.15); }
+.section-toggle.open  { transform: rotate(0deg); }
+.section-toggle.closed { transform: rotate(-90deg); }
 
-/* ── MOBILE-FIRST OVERRIDES ── */
+/* Section title: always flex so button sits on the right */
+.sidebar-section-title {
+  display: flex !important;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+}
 
-/* On mobile: stack layout, sidebar becomes an accordion-style top panel */
+/* Section body: animates open/closed */
+.sidebar-section-body {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+/* ── RESPONSIVE ── */
+/* Mobile default: single column */
 .app-shell {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 56px);
 }
-
-/* Sidebar scrolls horizontally on mobile via section tabs */
 .sidebar {
   height: auto;
   position: static;
@@ -317,53 +350,28 @@ input[type=range]::-webkit-slider-thumb {
   border-bottom: 1px solid var(--border);
 }
 
-/* Header: compress on small screens */
 @media (max-width: 480px) {
   header { padding: 0 14px; }
   .header-badge { display: none; }
-  .logo { font-size: 22px; letter-spacing: 2px; }
+  .logo { font-size: 20px; letter-spacing: 2px; }
 }
-
-/* Mobile sidebar: collapsible sections */
-.sidebar-section-title {
-  cursor: pointer;
-  user-select: none;
-}
-.sidebar-section-title::after {
-  content: '▾';
-  margin-left: auto;
-  font-size: 14px;
-  color: var(--muted);
-  transition: transform 0.2s;
-}
-.sidebar-section-title.collapsed::after { transform: rotate(-90deg); }
-.sidebar-section-body { overflow: hidden; transition: max-height 0.3s ease; }
-.sidebar-section-body.collapsed { max-height: 0 !important; }
-
-/* Larger touch targets for toggles on mobile */
 @media (max-width: 640px) {
-  .toggle-row { padding: 14px 0; }
+  .toggle-row  { padding: 14px 0; }
   .toggle-switch { width: 46px; height: 26px; }
   .toggle-switch::after { width: 20px; height: 20px; }
   .toggle-switch.on::after { transform: translateX(20px); }
-  .pill { padding: 6px 12px; font-size: 11px; }
+  .pill { padding: 7px 13px; font-size: 11px; }
   input[type=range] { height: 6px; }
-  input[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; }
+  input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
+  .spec-panel  { padding: 16px 14px; }
+  .spec-grid   { grid-template-columns: 1fr; gap: 8px; }
+  .tabs        { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .tab         { padding: 10px 14px; font-size: 9px; }
+  .field-view  { padding: 12px; }
+  .field-wrap  { padding: 6px; }
 }
 
-/* Field view: full width on mobile */
-.field-view { padding: 14px; }
-.field-wrap { padding: 8px; }
-
-/* Spec panel padding */
-@media (max-width: 640px) {
-  .spec-panel { padding: 16px 14px; }
-  .spec-grid { grid-template-columns: 1fr; gap: 8px; }
-  .tabs { overflow-x: auto; white-space: nowrap; }
-  .tab { padding: 10px 14px; font-size: 9px; }
-}
-
-/* Desktop: restore side-by-side layout */
+/* Desktop: restore side-by-side */
 @media (min-width: 900px) {
   .app-shell {
     display: grid;
@@ -379,11 +387,10 @@ input[type=range]::-webkit-slider-thumb {
     border-right: 1px solid var(--border);
     border-bottom: none;
   }
-  .sidebar-section-title { cursor: default; }
-  .sidebar-section-title::after { display: none; }
+  /* On desktop all sections are always open — hide the toggle button */
+  .section-toggle { display: none !important; }
   .sidebar-section-body { max-height: none !important; }
 }
-
 
 /* ── TOOLTIP ── */
 .tooltip-wrap { position:relative; display:inline-block; }
@@ -416,10 +423,8 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- FIXED -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">
-        Field Structure
-        <span class="locked-tag">🔒 FIXED</span>
-      </div>
+      <div class="sidebar-section-title">Field Structure
+        <span class="locked-tag">🔒 FIXED</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div style="font-size:10px; color:var(--muted); line-height:1.7;">
         Baseball diamond geometry, base distances, pitcher's mound position, foul lines, and outfield dimensions are permanent and cannot be modified. These form the immutable skeleton of Castle Ball.
       </div>
@@ -427,7 +432,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- BALL TYPE -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Ball Type <span class="tag">Equipment</span></div>
+      <div class="sidebar-section-title">Ball Type <span class="tag">Equipment</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="select-row">
         <div class="select-label">Select ball</div>
         <div class="select-desc">Affects pitch speed, curve ability, and audience visibility.</div>
@@ -445,7 +450,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- NET SIZE -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Castle Gate Size <span class="tag">Equipment</span></div>
+      <div class="sidebar-section-title">Castle Gate Size <span class="tag">Equipment</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="select-row">
         <div class="select-label">Goal net dimensions</div>
         <div class="select-desc">The net behind home plate that pitchers and defense target.</div>
@@ -459,7 +464,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- DEFENSE -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Defense Rules <span class="tag">Toggles</span></div>
+      <div class="sidebar-section-title">Defense Rules <span class="tag">Toggles</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="toggle-row" onclick="toggle('defRackets')">
         <div class="toggle-label">
           <div class="name">Defense carry rackets</div>
@@ -492,7 +497,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- OFFENSE -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Offense Rules <span class="tag">Toggles</span></div>
+      <div class="sidebar-section-title">Offense Rules <span class="tag">Toggles</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="toggle-row" onclick="toggle('offRackets')">
         <div class="toggle-label">
           <div class="name">Offense carry rackets on base</div>
@@ -525,7 +530,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- OUT LOGIC -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Out Logic <span class="tag">Toggles</span></div>
+      <div class="sidebar-section-title">Out Logic <span class="tag">Toggles</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="toggle-row" onclick="toggle('netLineCrossout')">
         <div class="toggle-label">
           <div class="name">Net-line cross = out at home</div>
@@ -544,7 +549,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- SCORING TOGGLES -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">Scoring <span class="tag">Adjustable</span></div>
+      <div class="sidebar-section-title">Scoring <span class="tag">Adjustable</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="slider-row">
         <div class="slider-label-row">
           <span class="slider-name">Home Run</span>
@@ -598,7 +603,7 @@ input[type=range]::-webkit-slider-thumb {
 
     <!-- MIXED LEAGUE -->
     <div class="sidebar-section">
-      <div class="sidebar-section-title">League Format <span class="tag">Toggles</span></div>
+      <div class="sidebar-section-title">League Format <span class="tag">Toggles</span><button class="section-toggle open" onclick="event.stopPropagation(); sectionToggle(this)" aria-label="Toggle section">▾</button></div>
       <div class="toggle-row" onclick="toggle('mixedLeague')">
         <div class="toggle-label">
           <div class="name">Mixed league (50/50)</div>
@@ -738,20 +743,6 @@ function toggle(key) {
   const el = document.getElementById('t-' + key);
   el.classList.toggle('on', state.toggles[key]);
   render();
-
-// Wrap sidebar section bodies for collapsible mobile behaviour
-document.querySelectorAll('.sidebar-section').forEach(section => {
-  const title = section.querySelector('.sidebar-section-title');
-  if (!title) return;
-  const children = Array.from(section.children).filter(c => c !== title);
-  if (!children.length) return;
-  const body = document.createElement('div');
-  body.className = 'sidebar-section-body';
-  children.forEach(c => body.appendChild(c));
-  section.appendChild(body);
-});
-initCollapsible();
-
 }
 
 // ── PILL ────────────────────────────────────────────────────────────────────
@@ -760,20 +751,6 @@ function setPill(group, val, btn) {
   document.querySelectorAll(`#${group}-pills .pill`).forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   render();
-
-// Wrap sidebar section bodies for collapsible mobile behaviour
-document.querySelectorAll('.sidebar-section').forEach(section => {
-  const title = section.querySelector('.sidebar-section-title');
-  if (!title) return;
-  const children = Array.from(section.children).filter(c => c !== title);
-  if (!children.length) return;
-  const body = document.createElement('div');
-  body.className = 'sidebar-section-body';
-  children.forEach(c => body.appendChild(c));
-  section.appendChild(body);
-});
-initCollapsible();
-
 }
 
 // ── SLIDER ──────────────────────────────────────────────────────────────────
@@ -785,20 +762,6 @@ function setSlider(key, val) {
   const min = +inp.min, max = +inp.max, v = +val;
   inp.style.setProperty('--pct', ((v-min)/(max-min)*100)+'%');
   render();
-
-// Wrap sidebar section bodies for collapsible mobile behaviour
-document.querySelectorAll('.sidebar-section').forEach(section => {
-  const title = section.querySelector('.sidebar-section-title');
-  if (!title) return;
-  const children = Array.from(section.children).filter(c => c !== title);
-  if (!children.length) return;
-  const body = document.createElement('div');
-  body.className = 'sidebar-section-body';
-  children.forEach(c => body.appendChild(c));
-  section.appendChild(body);
-});
-initCollapsible();
-
 }
 
 // ── TAB ─────────────────────────────────────────────────────────────────────
@@ -831,20 +794,6 @@ function resetAll() {
     }
   });
   render();
-
-// Wrap sidebar section bodies for collapsible mobile behaviour
-document.querySelectorAll('.sidebar-section').forEach(section => {
-  const title = section.querySelector('.sidebar-section-title');
-  if (!title) return;
-  const children = Array.from(section.children).filter(c => c !== title);
-  if (!children.length) return;
-  const body = document.createElement('div');
-  body.className = 'sidebar-section-body';
-  children.forEach(c => body.appendChild(c));
-  section.appendChild(body);
-});
-initCollapsible();
-
 }
 
 // ── VARIANT HASH ─────────────────────────────────────────────────────────────
@@ -1378,50 +1327,58 @@ function render() {
 
 render();
 
-// Wrap sidebar section bodies for collapsible mobile behaviour
-document.querySelectorAll('.sidebar-section').forEach(section => {
-  const title = section.querySelector('.sidebar-section-title');
-  if (!title) return;
-  const children = Array.from(section.children).filter(c => c !== title);
-  if (!children.length) return;
-  const body = document.createElement('div');
-  body.className = 'sidebar-section-body';
-  children.forEach(c => body.appendChild(c));
-  section.appendChild(body);
-});
-initCollapsible();
-
-
-// ── MOBILE COLLAPSIBLE SIDEBAR SECTIONS ──────────────────────────────────────
-function initCollapsible() {
-  if (window.innerWidth >= 900) return; // desktop: all open
-  document.querySelectorAll('.sidebar-section-title').forEach(title => {
-    const body = title.nextElementSibling;
-    if (!body || !body.classList.contains('sidebar-section-body')) return;
-    // Start collapsed except first section
-    const isFirst = title.closest('.sidebar-section') === document.querySelector('.sidebar-section');
-    if (!isFirst) {
-      title.classList.add('collapsed');
-      body.classList.add('collapsed');
-      body.style.maxHeight = '0';
-    } else {
-      body.style.maxHeight = body.scrollHeight + 'px';
-    }
-    title.addEventListener('click', () => {
-      if (window.innerWidth >= 900) return;
-      const collapsed = title.classList.toggle('collapsed');
-      body.classList.toggle('collapsed', collapsed);
-      body.style.maxHeight = collapsed ? '0' : body.scrollHeight + 'px';
+// ── SIDEBAR COLLAPSIBLE — runs once at page load ──────────────────────────────
+(function() {
+  // Wrap each section's non-title children in a .sidebar-section-body div
+  document.querySelectorAll('.sidebar-section').forEach(function(section) {
+    var title = section.querySelector('.sidebar-section-title');
+    if (!title) return;
+    var children = Array.from(section.children).filter(function(c){ return c !== title; });
+    if (!children.length) return;
+    var body = document.createElement('div');
+    body.className = 'sidebar-section-body';
+    // All open by default — set max-height to a large value so content shows
+    body.style.maxHeight = '2000px';
+    children.forEach(function(c){ body.appendChild(c); });
+    section.appendChild(body);
+    // Click on title row (not the button itself) also toggles
+    title.addEventListener('click', function(e){
+      if (e.target.classList.contains('section-toggle')) return; // button handles its own click
+      var btn = title.querySelector('.section-toggle');
+      if (btn) sectionToggle(btn);
     });
   });
-}
-// initCollapsible called after DOM wrap below
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 900) {
-    document.querySelectorAll('.sidebar-section-body').forEach(b => { b.style.maxHeight = ''; b.classList.remove('collapsed'); });
-    document.querySelectorAll('.sidebar-section-title').forEach(t => t.classList.remove('collapsed'));
+})();
+
+// Called by each section's toggle button
+function sectionToggle(btn) {
+  var section = btn.closest('.sidebar-section');
+  if (!section) return;
+  var body = section.querySelector('.sidebar-section-body');
+  if (!body) return;
+  var isOpen = btn.classList.contains('open');
+  if (isOpen) {
+    // Close it
+    body.style.maxHeight = body.scrollHeight + 'px'; // lock to current before animating
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        body.style.maxHeight = '0';
+      });
+    });
+    btn.classList.remove('open');
+    btn.classList.add('closed');
+  } else {
+    // Open it
+    body.style.maxHeight = body.scrollHeight + 'px';
+    btn.classList.remove('closed');
+    btn.classList.add('open');
+    // After animation ends, remove fixed max-height so content can grow freely
+    body.addEventListener('transitionend', function handler(){
+      if (btn.classList.contains('open')) body.style.maxHeight = '2000px';
+      body.removeEventListener('transitionend', handler);
+    });
   }
-});
+}
 
 </script>
 </body>
